@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Kuis: Valuasi atau Kalibrasi?</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F7F7F5; color: #1C1C1E; line-height: 1.6; }
+
+.screen { display: none; padding: 24px 16px 48px; max-width: 560px; margin: 0 auto; }
+
+.eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 20px; }
+.title { font-size: 32px; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
+.title em { font-style: italic; color: #C84B31; }
+.subtitle { font-size: 15px; color: #666; margin-bottom: 24px; line-height: 1.7; }
+
+.card2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+.card { background: #fff; border: 1px solid #E5E5E7; border-radius: 12px; padding: 14px; }
+.card-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+.card.v .card-label { color: #C84B31; }
+.card.k .card-label { color: #2D6A4F; }
+.card-body { font-size: 12px; color: #666; line-height: 1.6; }
+.card-body em { display: block; margin-top: 6px; font-style: italic; }
+
+.btn-main { display: block; width: 100%; background: #1C1C1E; color: #fff; border: none; border-radius: 14px; padding: 18px; font-size: 17px; font-weight: 600; cursor: pointer; font-family: inherit; -webkit-appearance: none; }
+.btn-main:active { background: #444; }
+
+.topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.counter { font-size: 13px; color: #888; white-space: nowrap; }
+.prog-wrap { flex: 1; height: 5px; background: #E5E5E7; border-radius: 99px; overflow: hidden; }
+.prog-bar { height: 100%; background: #1C1C1E; border-radius: 99px; width: 0; transition: width 0.3s; }
+
+.q-card { background: #fff; border: 1px solid #E5E5E7; border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+.q-num { font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.q-text { font-size: 18px; font-weight: 500; line-height: 1.5; }
+
+.options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.opt { display: flex; align-items: center; gap: 12px; background: #fff; border: 1.5px solid #E5E5E7; border-radius: 14px; padding: 16px; font-size: 15px; color: #555; cursor: pointer; text-align: left; width: 100%; font-family: inherit; min-height: 56px; -webkit-appearance: none; }
+.opt:active { opacity: 0.7; }
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #ccc; flex-shrink: 0; background: transparent; }
+
+.opt.sel0 { background: #FEF3F0; border-color: #C84B31; color: #C84B31; font-weight: 600; }
+.opt.sel0 .dot { background: #C84B31; border-color: #C84B31; }
+.opt.sel1 { background: #FFFBF0; border-color: #D4870A; color: #905E07; font-weight: 600; }
+.opt.sel1 .dot { background: #D4870A; border-color: #D4870A; }
+.opt.sel2 { background: #F0F6FF; border-color: #2563EB; color: #1D4ED8; font-weight: 600; }
+.opt.sel2 .dot { background: #2563EB; border-color: #2563EB; }
+.opt.sel3 { background: #EDFBF4; border-color: #2D6A4F; color: #2D6A4F; font-weight: 600; }
+.opt.sel3 .dot { background: #2D6A4F; border-color: #2D6A4F; }
+
+.nav { display: flex; gap: 10px; }
+.btn-back { flex: 1; background: #fff; border: 1.5px solid #E5E5E7; border-radius: 14px; padding: 16px; font-size: 15px; color: #888; cursor: pointer; font-family: inherit; -webkit-appearance: none; }
+.btn-back:active { background: #eee; }
+.btn-fwd { flex: 2; background: #1C1C1E; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; -webkit-appearance: none; }
+.btn-fwd:active { background: #444; }
+.btn-fwd.off { opacity: 0.3; pointer-events: none; }
+
+.r-hero { background: #fff; border: 1px solid #E5E5E7; border-radius: 20px; padding: 28px 20px; text-align: center; margin-bottom: 14px; }
+.r-badge { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 99px; margin-bottom: 14px; }
+.rv { background: #FAF0ED; color: #C84B31; }
+.rk { background: #EAF4EF; color: #2D6A4F; }
+.rm { background: #F3EEFF; color: #6D4C9F; }
+.r-title { font-size: 26px; font-weight: 700; margin-bottom: 12px; line-height: 1.25; }
+.r-desc { font-size: 14px; color: #666; line-height: 1.75; }
+
+.score-card { background: #fff; border: 1px solid #E5E5E7; border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+.score-title { font-size: 11px; font-weight: 600; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.bar-wrap { margin-bottom: 14px; }
+.bar-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight: 500; }
+.bar-track { height: 9px; background: #E5E5E7; border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; width: 0; transition: width 0.9s cubic-bezier(.4,0,.2,1); }
+.bar-v-fill { background: #C84B31; }
+.bar-k-fill { background: #2D6A4F; }
+
+.def2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.def { background: #fff; border: 1px solid #E5E5E7; border-radius: 12px; padding: 14px; }
+.def-lbl { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+.def.dv .def-lbl { color: #C84B31; }
+.def.dk .def-lbl { color: #2D6A4F; }
+.def-txt { font-size: 12px; color: #666; line-height: 1.6; }
+.def-eff { display: block; margin-top: 5px; font-style: italic; }
+
+.btn-ghost { display: block; width: 100%; background: #fff; border: 1.5px solid #E5E5E7; border-radius: 14px; padding: 16px; font-size: 15px; color: #888; cursor: pointer; font-family: inherit; -webkit-appearance: none; }
+.btn-ghost:active { background: #eee; }
+
+@media (max-width: 400px) {
+  .title { font-size: 26px; }
+  .card2, .def2 { grid-template-columns: 1fr; }
+  .q-text { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HALAMAN 0: INTRO -->
+<div class="screen" id="pg0" style="display:block">
+  <p class="eyebrow">Kuis Diri</p>
+  <h1 class="title">Kamu <em>Valuasi</em><br>atau Kalibrasi?</h1>
+  <p class="subtitle">Saat melihat orang lain yang lebih sukses — apa yang terjadi dalam pikiranmu? Jawab 15 pernyataan berikut untuk mengetahui pola pikir perbandingan sosialmu.</p>
+  <div class="card2">
+    <div class="card v">
+      <div class="card-label">Valuasi</div>
+      <div class="card-body">Pakai perbandingan ke atas untuk menentukan harga diri sebagai manusia.<em>Menghasilkan iri, keputusasaan, dan membatasi potensi.</em></div>
+    </div>
+    <div class="card k">
+      <div class="card-label">Kalibrasi</div>
+      <div class="card-body">Pakai perbandingan ke atas sebagai informasi untuk memetakan jarak yang harus ditempuh.<em>Menghasilkan inspirasi, pembelajaran, dan efikasi diri.</em></div>
+    </div>
+  </div>
+  <button class="btn-main" onclick="mulaiKuis()">Mulai Kuis &#8594;</button>
+</div>
+
+<!-- HALAMAN 1: SOAL -->
+<div class="screen" id="pg1">
+  <div class="topbar">
+    <span class="counter" id="ctr">1 / 15</span>
+    <div class="prog-wrap"><div class="prog-bar" id="prog"></div></div>
+    <span class="counter" id="pct">0%</span>
+  </div>
+  <div class="q-card">
+    <div class="q-num" id="qnum">Pernyataan 01</div>
+    <div class="q-text" id="qtext"></div>
+  </div>
+  <div class="options" id="opts"></div>
+  <div class="nav">
+    <button class="btn-back" id="bkBtn" onclick="kembali()">&#8592; Kembali</button>
+    <button class="btn-fwd off" id="fwBtn" onclick="lanjut()">Lanjut &#8594;</button>
+  </div>
+</div>
+
+<!-- HALAMAN 2: HASIL -->
+<div class="screen" id="pg2">
+  <div class="r-hero">
+    <div class="r-badge rv" id="rbadge"></div>
+    <div class="r-title" id="rtitle"></div>
+    <div class="r-desc" id="rdesc"></div>
+  </div>
+  <div class="score-card">
+    <div class="score-title">Skor Kamu</div>
+    <div class="bar-wrap">
+      <div class="bar-meta"><span style="color:#C84B31">Valuasi</span><span id="vpct" style="color:#888"></span></div>
+      <div class="bar-track"><div class="bar-fill bar-v-fill" id="barv"></div></div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-meta"><span style="color:#2D6A4F">Kalibrasi</span><span id="kpct" style="color:#888"></span></div>
+      <div class="bar-track"><div class="bar-fill bar-k-fill" id="bark"></div></div>
+    </div>
+  </div>
+  <div class="def2">
+    <div class="def dv">
+      <div class="def-lbl">Valuasi</div>
+      <div class="def-txt">Pakai perbandingan ke atas untuk menentukan harga diri sebagai manusia.<em class="def-eff">&#8594; Iri, keputusasaan, potensi terbatas</em></div>
+    </div>
+    <div class="def dk">
+      <div class="def-lbl">Kalibrasi</div>
+      <div class="def-txt">Pakai perbandingan ke atas sebagai informasi untuk memetakan jarak yang harus ditempuh.<em class="def-eff">&#8594; Inspirasi, pembelajaran, efikasi diri</em></div>
+    </div>
+  </div>
+  <button class="btn-ghost" onclick="ulangiKuis()">Ulangi kuis dari awal</button>
+</div>
+
+<script>
+var Q = [
+  {t:"Kalau aku lihat teman sebaya sudah punya jabatan lebih tinggi, aku jadi merasa diri aku kurang berharga.",tp:"V"},
+  {t:"Ketika lihat orang lain sukses, aku langsung penasaran: apa yang mereka lakukan berbeda dari aku?",tp:"K"},
+  {t:"Melihat teman yang lebih kaya sering bikin aku merasa hidupku gagal.",tp:"V"},
+  {t:"Kalau ada yang lebih pintar dariku di suatu bidang, aku jadikan itu motivasi untuk belajar lebih.",tp:"K"},
+  {t:"Saat scroll media sosial dan lihat pencapaian orang lain, aku sering merasa tidak cukup baik.",tp:"V"},
+  {t:"Ketika ada rekan yang dapat promosi lebih cepat, aku coba pahami apa yang bisa aku pelajari dari perjalanan mereka.",tp:"K"},
+  {t:"Melihat orang yang lebih berhasil bikin aku ingin menyerah duluan.",tp:"V"},
+  {t:"Aku anggap orang yang lebih hebat dariku sebagai peta jalan — mereka buktikan bahwa pencapaian itu mungkin.",tp:"K"},
+  {t:"Kalau ada yang memuji teman lebih dari aku, aku otomatis merasa dia lebih bernilai dari aku sebagai manusia.",tp:"V"},
+  {t:"Aku bisa kagum sama pencapaian orang lain tanpa langsung membandingkan harga diri aku dengan mereka.",tp:"K"},
+  {t:"Aku sering berpikir: aku tidak akan pernah bisa seperti dia — saat lihat orang yang sangat berprestasi.",tp:"V"},
+  {t:"Melihat orang lebih maju justru bikin aku lebih yakin bahwa aku juga bisa mencapainya kalau terus berproses.",tp:"K"},
+  {t:"Keberhasilan orang lain sering bikin aku merasa diriku yang terbelakang, bukan mereka yang maju.",tp:"V"},
+  {t:"Aku pakai kesuksesan orang lain sebagai referensi untuk tahu langkah apa yang perlu aku ambil selanjutnya.",tp:"K"},
+  {t:"Aku lebih suka tidak tahu seberapa jauh pencapaian orang lain, karena itu selalu bikin aku merasa buruk tentang diri sendiri.",tp:"V"}
+];
+
+var OPT = [
+  {label:"Sangat Setuju", score:4},
+  {label:"Setuju", score:3},
+  {label:"Tidak Setuju", score:2},
+  {label:"Sangat Tidak Setuju", score:1}
+];
+
+var cur = 0;
+var ans = new Array(Q.length).fill(null);
+
+function tampilHalaman(n) {
+  document.getElementById('pg0').style.display = (n === 0) ? 'block' : 'none';
+  document.getElementById('pg1').style.display = (n === 1) ? 'block' : 'none';
+  document.getElementById('pg2').style.display = (n === 2) ? 'block' : 'none';
+  window.scrollTo(0, 0);
+}
+
+function render() {
+  var q = Q[cur];
+  var a = ans[cur];
+  var n = cur + 1;
+
+  document.getElementById('qnum').textContent = 'Pernyataan ' + (n < 10 ? '0' : '') + n;
+  document.getElementById('qtext').textContent = q.t;
+  document.getElementById('ctr').textContent = n + ' / ' + Q.length;
+
+  var done = ans.filter(function(x){ return x !== null; }).length;
+  var p = Math.round(done / Q.length * 100);
+  document.getElementById('prog').style.width = p + '%';
+  document.getElementById('pct').textContent = p + '%';
+
+  // Tombol kembali
+  var bk = document.getElementById('bkBtn');
+  bk.style.opacity = (cur === 0) ? '0.3' : '1';
+  bk.style.pointerEvents = (cur === 0) ? 'none' : 'auto';
+
+  // Tombol lanjut
+  var fw = document.getElementById('fwBtn');
+  if (a === null) {
+    fw.classList.add('off');
+  } else {
+    fw.classList.remove('off');
+  }
+  fw.textContent = (cur === Q.length - 1) ? 'Lihat Hasil \u2192' : 'Lanjut \u2192';
+
+  // Render pilihan jawaban dengan onclick inline
+  var html = '';
+  for (var i = 0; i < OPT.length; i++) {
+    var selClass = (a === i) ? ' sel' + i : '';
+    html += '<button class="opt' + selClass + '" onclick="pilih(' + i + ')">'
+          + '<span class="dot"></span>' + OPT[i].label + '</button>';
+  }
+  document.getElementById('opts').innerHTML = html;
+}
+
+function pilih(i) {
+  ans[cur] = i;
+  render();
+}
+
+function mulaiKuis() {
+  cur = 0;
+  ans = new Array(Q.length).fill(null);
+  render();
+  tampilHalaman(1);
+}
+
+function lanjut() {
+  if (ans[cur] === null) return;
+  if (cur < Q.length - 1) {
+    cur++;
+    render();
+    window.scrollTo(0, 0);
+  } else {
+    tampilkanHasil();
+  }
+}
+
+function kembali() {
+  if (cur > 0) {
+    cur--;
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+
+function tampilkanHasil() {
+  var vs = 0, ks = 0;
+  for (var i = 0; i < Q.length; i++) {
+    if (ans[i] === null) continue;
+    if (Q[i].tp === 'V') vs += OPT[ans[i]].score;
+    else ks += OPT[ans[i]].score;
+  }
+  var tot = vs + ks;
+  var vp = Math.round(vs / tot * 100);
+  var kp = 100 - vp;
+
+  var badge, bcls, title, desc;
+  if (vp >= 62) {
+    badge = 'Tipe Valuasi'; bcls = 'rv';
+    title = 'Kamu cenderung Valuasi';
+    desc = 'Saat melihat orang lain yang lebih sukses, kamu cenderung menjadikannya tolok ukur harga dirimu sebagai manusia. Ini membuat perbandingan terasa menyakitkan — bukan karena kamu lemah, tapi karena kamu menggunakan informasi yang seharusnya netral untuk menghakimi dirimu sendiri. Kabar baiknya: pola ini bisa diubah dengan latihan.';
+  } else if (kp >= 62) {
+    badge = 'Tipe Kalibrasi'; bcls = 'rk';
+    title = 'Kamu cenderung Kalibrasi';
+    desc = 'Kamu sudah punya kemampuan yang sehat dalam memakai perbandingan sosial sebagai informasi, bukan vonis. Ketika melihat orang lain lebih maju, kamu bertanya "apa yang bisa aku pelajari?" bukan "apa yang kurang dariku?" Terus jaga pola pikir ini — ini adalah fondasi yang kuat untuk pertumbuhan yang berkelanjutan.';
+  } else {
+    badge = 'Tipe Campuran'; bcls = 'rm';
+    title = 'Kamu campuran Valuasi & Kalibrasi';
+    desc = 'Responmu terhadap perbandingan sosial bergantung pada konteks — kadang kamu bisa menjadikannya motivasi, kadang malah bikin kamu meragukan dirimu sendiri. Dengan lebih sering menyadari pertanyaan yang muncul di kepalamu saat membandingkan diri, kamu bisa perlahan bergeser ke pola kalibrasi.';
+  }
+
+  document.getElementById('rbadge').textContent = badge;
+  document.getElementById('rbadge').className = 'r-badge ' + bcls;
+  document.getElementById('rtitle').textContent = title;
+  document.getElementById('rdesc').textContent = desc;
+  document.getElementById('vpct').textContent = vp + '%';
+  document.getElementById('kpct').textContent = kp + '%';
+
+  tampilHalaman(2);
+  setTimeout(function() {
+    document.getElementById('barv').style.width = vp + '%';
+    document.getElementById('bark').style.width = kp + '%';
+  }, 300);
+}
+
+function ulangiKuis() {
+  cur = 0;
+  ans = new Array(Q.length).fill(null);
+  tampilHalaman(0);
+}
+</script>
+</body>
+</html>
